@@ -3,7 +3,7 @@
   hosts: all
   vars:
     ENV: "ENV=php-fpm"
-    server_hostname: www.amihuradocker.tk
+    server_hostname: demoapp.loc
   tasks:
     - name: install packages
       yum: name={{ item }} state=latest update_cache=yes
@@ -18,14 +18,14 @@
         creates: /usr/bin/docker
 
     # required to install docker-py
-    - name: install pip
-      shell: curl https://bootstrap.pypa.io/get-pip.py | python
-      args:
-        creates: /usr/local/bin/pip
+    #- name: install pip
+    #  shell: curl https://bootstrap.pypa.io/get-pip.py | python
+    #  args:
+    #    creates: /usr/local/bin/pip
 
     # required by ansible docker module
-    - name: install docker-py
-      pip: name=docker-py version=1.1.0 # v1.1.0 is workaround from https://github.com/ansible/ansible/issues/10879#issuecomment-97738264
+    #- name: install docker-py
+    #  pip: name=docker-py version=1.1.0 # v1.1.0 is workaround from https://github.com/ansible/ansible/issues/10879#issuecomment-97738264
 
     - name: Start docker daemon
       service: name=docker state=started enabled=yes
@@ -86,21 +86,21 @@
         links:
           - "php-fpm:php-fpm"
         ports:
-          - "80:80"
-          - "443:443"
+          - "6080:80"
+          - "6443:443"
         env: "{{ ENV }}"
 
-    - name: check or build proftpd image
-      docker_image:
-        path: /opt/ansible-docker-lemp/docker/proftpd
-        name: proftpd-img
-        state: present
+    #- name: check or build proftpd image
+    #  docker_image:
+    #    path: /opt/ansible-docker-lemp/docker/proftpd
+    #    name: proftpd-img
+    #    state: present
 
-    - name: proftpd container
-      docker:
-        image: proftpd-img
-        name: proftpd
-        state: reloaded
-        net: host
-        volumes_from:
-          - "php-fpm"
+    #- name: proftpd container
+    #  docker:
+    #    image: proftpd-img
+    #    name: proftpd
+    #    state: reloaded
+    #    net: host
+    #    volumes_from:
+    #      - "php-fpm"
